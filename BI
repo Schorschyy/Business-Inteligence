@@ -1,3 +1,5 @@
+--A1.2)
+
 Create Table Geografie (
 		Land_ID varchar(2) primary key,
 		Bundesland varchar(25),
@@ -49,6 +51,8 @@ Create Table Umsatzdaten (
 		Umsatzmenge INTEGER,
 		Primary Key (Mon_ID, Land_ID, Produkt_ID, Mitarbeiter_ID)
 )
+
+--A1.3)
 
 insert into Geografie values('01', 'Sachsen-Anhalt','Ost','Deutschland')
 insert into Geografie values('02', 'Bayern','Süd','Deutschland')
@@ -335,6 +339,8 @@ insert into Produktsubkategorie values('010','Brot','Heinrich Gans','01')
 insert into Produktsubkategorie values('011','Sauerrahm','Sven Klaus','02')
 insert into Produktsubkategorie values('012','Joghurt','Dorit Gille','02')
 
+--A1.4)
+
 insert into Zeit values('202101','Januar','202101','1.Quartal','2021')
 insert into Zeit values('202102','Februar','202101','1.Quartal','2021')
 insert into Zeit values('202103','März','202101','1.Quartal','2021')
@@ -359,3 +365,125 @@ insert into Zeit values('202209','September','202203','3.Quartal','2022')
 insert into Zeit values('202210','Oktober','202204','4.Quartal','2022')
 insert into Zeit values('202211','November','202204','4.Quartal','2022')
 insert into Zeit values('202212','Dezember','202204','4.Quartal','2022')
+
+
+--A1.5)
+
+Update MitarbeiterShop set Name = 'Linus Pfefferkorn' where Mitarbeiter_ID = '02'
+Update Produktkategorie set Kategorie_Manager = 'Linus Pfefferkorn' where Kategorie_ID = '01'
+
+Alter table MitarbeiterShop Alter column Manager_ID varchar(2)
+Alter table MitarbeiterShop add Manager_ID varchar(2)
+Update MitarbeiterShop set Manager_ID = Mitarbeiter_ID where Mitarbeiter_ID = '01'
+Alter table MitarbeiterShop add foreign key (Manager_ID) references MitarbeiterShop (Mitarbeiter_ID)
+Update MitarbeiterShop set Manager_ID = '01' where MitarbeiterShop.Name in (Select Kategorie_Manager from Produktkategorie)
+Update MitarbeiterShop set Manager_ID = '02' where MitarbeiterShop.Name in (Select Subkategorie_Manager from Produktsubkategorie where Kategorie_ID = 01)
+Update MitarbeiterShop set Manager_ID = '03' where MitarbeiterShop.Name in (Select Subkategorie_Manager from Produktsubkategorie where Kategorie_ID = 02)
+Update MitarbeiterShop set Manager_ID = '04' where MitarbeiterShop.Name in (Select Subkategorie_Manager from Produktsubkategorie where Kategorie_ID = 03)
+
+Select * from MitarbeiterShop
+
+select * from Produktsubkategorie
+
+--A1.7)
+--Bon_ID,Fil_ID,Datum,Prod_ID,Preis,Anzahl
+--Bon ID varchar(4)
+--Fil ID varchar(5)
+--Datum date
+--Prod ID varchar(4)
+--Preis money
+--Anzahl int
+
+--A1.8)
+
+Create Table BelegeTMP(
+	Bon_ID varchar(4),
+	Fil_ID varchar(5),
+	Datum date,
+	Prod_ID varchar(4),
+	Preis money,
+	Anzahl int
+	)
+
+Create Table UmsatzdatenTMP(
+		Mon_ID VARCHAR (6) Foreign key references Zeit(Mon_ID),
+		Land_ID VARCHAR (2) Foreign key references Geografie(Land_ID),
+		Produkt_ID VARCHAR (4) Foreign key references Produkt(Produkt_ID),
+		Mitarbeiter_ID VARCHAR (2) Foreign key references MitarbeiterShop(Mitarbeiter_ID),
+		Umsatzbetrag MONEY,
+		Umsatzmenge INTEGER
+		)
+
+BULK INSERT BelegeTMP
+	FROM 'D:\BI\Belege_2021_1.csv'
+	WITH (
+	FIELDTERMINATOR = ',', 
+	FIRSTROW = 2, 
+	ROWTERMINATOR = '\n'
+	) 
+
+BULK INSERT BelegeTMP
+	FROM 'D:\BI\Belege_2021_2.csv'
+	WITH (
+	FIELDTERMINATOR = ',', 
+	FIRSTROW = 2, 
+	ROWTERMINATOR = '\n'
+	) 
+
+BULK INSERT BelegeTMP
+	FROM 'D:\BI\Belege_2021_3.csv'
+	WITH (
+	FIELDTERMINATOR = ',', 
+	FIRSTROW = 2, 
+	ROWTERMINATOR = '\n'
+	) 
+
+BULK INSERT BelegeTMP
+	FROM 'D:\BI\Belege_2021_4.csv'
+	WITH (
+	FIELDTERMINATOR = ',', 
+	FIRSTROW = 2, 
+	ROWTERMINATOR = '\n'
+	) 
+
+BULK INSERT BelegeTMP
+	FROM 'D:\BI\Belege_2022_1.csv'
+	WITH (
+	FIELDTERMINATOR = ',', 
+	FIRSTROW = 2, 
+	ROWTERMINATOR = '\n'
+	) 
+
+BULK INSERT BelegeTMP
+	FROM 'D:\BI\Belege_2022_2.csv'
+	WITH (
+	FIELDTERMINATOR = ',', 
+	FIRSTROW = 2, 
+	ROWTERMINATOR = '\n'
+	) 
+
+BULK INSERT BelegeTMP
+	FROM 'D:\BI\Belege_2022_3.csv'
+	WITH (
+	FIELDTERMINATOR = ',', 
+	FIRSTROW = 2, 
+	ROWTERMINATOR = '\n'
+	) 
+
+BULK INSERT BelegeTMP
+	FROM 'D:\BI\Belege_2022_4.csv'
+	WITH (
+	FIELDTERMINATOR = ',', 
+	FIRSTROW = 2, 
+	ROWTERMINATOR = '\n'
+	) 
+
+
+
+select * from BelegeTMP
+
+insert into UmsatzdatenTMP values((select Format(Datum, 'yyyyMM') from BelegeTMP),(select Left(Fil_ID,2) from BelegeTMP),(select Prod_ID from BelegeTMP),NULL,(select )
+
+select * from Zeit
+
+
